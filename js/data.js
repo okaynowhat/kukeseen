@@ -244,3 +244,24 @@ window.KS_DATA = {
     }
   ]
 };
+
+// Forest register (metsaregister, Keskkonnaagentuur, CC BY 4.0) classifiers used by the habitat layer.
+window.KS_HABITAT = {
+  wfs: 'https://gsavalik.envir.ee/geoserver/metsaregister/ows',
+  species: { MA: { et: 'mänd', en: 'pine' }, KU: { et: 'kuusk', en: 'spruce' }, KS: { et: 'kask', en: 'birch' }, HB: { et: 'haab', en: 'aspen' }, LM: { et: 'sanglepp', en: 'black alder' }, LV: { et: 'hall lepp', en: 'grey alder' } },
+  // Estonian forest site types (kasvukohatüübid) grouped by type class. Chanterelle relevance per group.
+  siteGroups: {
+    loo:   { et: 'loomets', en: 'alvar forest', codes: ['LL', 'KL', 'LU'], rank: 1 },
+    nomm:  { et: 'nõmmemets', en: 'dry heath forest', codes: ['SM', 'KN'], rank: 2 },
+    palu:  { et: 'palumets', en: 'heath pine forest', codes: ['PH', 'JP', 'MS', 'KM'], rank: 3 },
+    laane: { et: 'laanemets', en: 'boreal spruce forest', codes: ['JM', 'JK', 'SL'], rank: 2 },
+    salu:  { et: 'salumets', en: 'rich deciduous forest', codes: ['ND', 'SJ'], rank: 0 },
+    soovik:{ et: 'soovikumets', en: 'paludified forest', codes: ['OS', 'TR', 'AN', 'TA'], rank: 0 },
+    raba:  { et: 'rabastuv mets', en: 'bog-edge forest', codes: ['SN', 'KR'], rank: 1 },
+    soo:   { et: 'soomets', en: 'swamp forest', codes: ['LD', 'MD', 'SS', 'RB'], rank: 0 },
+    kodusoo:{ et: 'kõdusoomets', en: 'drained peatland forest', codes: ['MO', 'JO'], rank: 1 },
+    puistang:{ et: 'puistang', en: 'spoil heap', codes: ['MP', 'TP'], rank: 0 }
+  },
+  siteNames: { LL: 'leesikaloo', KL: 'kastikuloo', LU: 'lubikaloo', SM: 'sambliku', PH: 'pohla', JP: 'jänesekapsa-pohla', MS: 'mustika', KM: 'karusambla-mustika', JM: 'jänesekapsa-mustika', JK: 'jänesekapsa', SL: 'sinilille', ND: 'naadi', SJ: 'sõnajala', OS: 'osja', TR: 'tarna', AN: 'angervaksa', TA: 'tarna-angervaksa', SN: 'sinika', KR: 'karusambla', LD: 'lodu', MD: 'madalsoo', SS: 'siirdesoo', RB: 'raba', MO: 'mustika-kõdusoo', JO: 'jänesekapsa-kõdusoo', MP: 'mineraalne puistang', TP: 'turbane puistang', KN: 'kanarbiku' },
+  ownership: { R: { et: 'riigimets', en: 'state forest' }, T: { et: 'riigimets (ajutiselt)', en: 'state forest (temporary)' }, F: { et: 'eramets, eraisik', en: 'private forest, individual' }, J: { et: 'eramets, ettevõte', en: 'private forest, company' }, Y: { et: 'eramets, segaomand', en: 'private forest, mixed' }, X: { et: 'eramets, ühisomand', en: 'private forest, joint' }, E: { et: 'segaomand eraisikuga', en: 'mixed with an individual' }, S: { et: 'segaomand', en: 'mixed ownership' }, M: { et: 'munitsipaalmets', en: 'municipal forest' }, A: { et: 'avalik-õiguslik omand', en: 'public body' }, KK: { et: 'kaitseala korraldus', en: 'protected area management' }, '-': { et: 'omanik teadmata', en: 'owner unknown' } }
+};

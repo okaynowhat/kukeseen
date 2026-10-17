@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   const D = window.KS_DATA, I18N = window.KS_I18N, LESSONS = window.KS_LESSONS, QUIZ = window.KS_QUIZ;
-  const VERSION = '0.1.0';
+  const VERSION = '0.2.0';
   const $ = (s, r) => (r || document).querySelector(s);
   const el = (tag, attrs, children) => {
     const n = document.createElement(tag);
@@ -50,6 +50,7 @@
     document.querySelectorAll('[data-t]').forEach((n) => { const v = n.getAttribute('data-t').split('.').reduce((o, k) => (o ? o[k] : undefined), T()); if (typeof v === 'string') n.textContent = v; });
     $('#btnLayers').setAttribute('aria-label', T().layers); $('#btnLocate').setAttribute('aria-label', T().locate); $('#btnFollow').setAttribute('aria-label', T().follow);
     renderAll();
+    const lg = $('#habLegend'); if (lg) { const t = T().habitat; lg.querySelector('b').textContent = t.legend; const rows = lg.querySelectorAll('.row'); [t.pine, t.spruce, t.palu].forEach((txt, i) => { if (rows[i]) rows[i].lastChild.textContent = txt; }); }
   }
 
   // ---------- IndexedDB for finds ----------
@@ -62,8 +63,8 @@
 
   // ---------- map ----------
   let map, spotLayer, findLayer, userMarker, accCircle, homeMarker, line, baseLayers = {}, currentBase;
-  const ATTR_OSM = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-  const ATTR_MA = '&copy; <a href="https://geoportaal.maaamet.ee/">Maa-amet</a>';
+  const ATTR_OSM = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+  const ATTR_MA = '&copy; <a href="https://geoportaal.maaamet.ee/" target="_blank" rel="noopener">Maa-amet</a>';
   function initMap() {
     map = L.map('map', { zoomControl: false, attributionControl: true, maxZoom: 18, worldCopyJump: false }).setView([S.home.lat, S.home.lon], 11);
     L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
@@ -164,7 +165,7 @@
   }
 
   // ---------- sheet ----------
-  function setSheet(state) { S.sheet = state; const sh = $('#sheet'); sh.classList.remove('half', 'full'); if (state !== 'peek') sh.classList.add(state); $('.mapbtns').style.bottom = state === 'peek' ? '' : (state === 'half' ? 'calc(48% + 12px)' : '48%'); }
+  function setSheet(state) { S.sheet = state; const sh = $('#sheet'); sh.classList.remove('half', 'full'); if (state !== 'peek') sh.classList.add(state); const b = state === 'peek' ? '' : (state === 'half' ? 'calc(48% + 12px)' : '48%'); $('.mapbtns').style.bottom = b; const lg = $('#habLegend'); if (lg) lg.style.bottom = b; }
   (function sheetDrag() {
     const h = $('#handle'), sh = $('#sheet'); let startY = 0, startH = 0, dragging = false;
     const onDown = (e) => { dragging = true; startY = e.clientY; startH = sh.getBoundingClientRect().height; sh.classList.add('dragging'); h.setPointerCapture(e.pointerId); };
@@ -269,11 +270,102 @@
   function renderLayerMenu() {
     const m = $('#layerMenu'); m.innerHTML = '';
     ['osm', 'kaart', 'foto', 'hybriid'].forEach((k) => m.append(el('button', { class: S.layer === k ? 'on' : '', onclick: () => { setBase(k); renderLayerMenu(); closeMenus(); } }, [T().layer[k]])));
+    const th = T().habitat;
+    m.append(el('div', { class: 'sep' }));
+    m.append(el('button', { class: HAB.on ? 'on' : '', onclick: () => { setHab(!HAB.on); renderLayerMenu(); } }, [(HAB.on ? '☑ ' : '☐ ') + th.layer]));
+    const chips = el('div', { class: 'chips' }, [el('span', { class: 'small muted', style: 'align-self:center' }, [th.minAge])]);
+    [40, 60, 80].forEach((a) => chips.append(el('button', { class: 'chip' + (HAB.minAge === a ? ' on' : ''), onclick: () => { setHabAge(a); if (!HAB.on) setHab(true); renderLayerMenu(); } }, [`${a} ${th.years}`])));
+    m.append(chips);
   }
   $('#btnLayers').addEventListener('click', (e) => { e.stopPropagation(); const m = $('#layerMenu'); const open = m.classList.contains('open'); closeMenus(); if (!open) { renderLayerMenu(); m.classList.add('open'); setTimeout(() => document.addEventListener('click', closeMenusOnce, { once: true }), 0); } });
   $('#btnLocate').addEventListener('click', locate);
   $('#btnFollow').addEventListener('click', () => { S.follow = !S.follow; $('#btnFollow').classList.toggle('active', S.follow); if (S.follow) { startWatch({ center: true }); enableCompass(); if (S.pos) map.panTo([S.pos.lat, S.pos.lon]); } });
   $('#btnAbout').addEventListener('click', () => setTab('about'));
+
+
+  // ---------- habitat layer: forest register stands (metsaregister WFS) ----------
+  const HB = window.KS_HABITAT;
+  const HAB = { on: localStorage.getItem('ks.hab') === '1', minAge: +(localStorage.getItem('ks.habAge') || 40), minZoom: 13, cells: new Map(), layers: new Map(), group: null, inflight: 0, hintShown: false, lastKeys: '' };
+  const HAB_FIELDS = 'shape,peapuuliik_kood,keskm_vanus,kasvukoht_kood,korgus,pindala,omandivorm_kood';
+  function tile2lon(x, z) { return x / 2 ** z * 360 - 180; }
+  function tile2lat(y, z) { const n = Math.PI - 2 * Math.PI * y / 2 ** z; return deg(Math.atan(Math.sinh(n))); }
+  function habCellUrl(x, y) {
+    const z = HAB.minZoom; const w = tile2lon(x, z).toFixed(5), e = tile2lon(x + 1, z).toFixed(5), n = tile2lat(y, z).toFixed(5), so = tile2lat(y + 1, z).toFixed(5);
+    const cql = `BBOX(shape,${w},${so},${e},${n},'EPSG:4326') AND peapuuliik_kood IN ('MA','KU') AND keskm_vanus>=40`;
+    return `${HB.wfs}?service=WFS&version=2.0.0&request=GetFeature&typeNames=metsaregister:eraldis&outputFormat=application/json&srsName=EPSG:4326&count=5000&propertyName=${HAB_FIELDS}&CQL_FILTER=${encodeURIComponent(cql)}&ks=v1`;
+  }
+  function habCellsFor(bounds) {
+    const z = HAB.minZoom; const keys = [];
+    const x0 = lon2tile(bounds.getWest(), z), x1 = lon2tile(bounds.getEast(), z), y0 = lat2tile(bounds.getNorth(), z), y1 = lat2tile(bounds.getSouth(), z);
+    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) keys.push(`${x}/${y}`);
+    return keys;
+  }
+  function siteGroup(code) { for (const k in HB.siteGroups) if (HB.siteGroups[k].codes.includes(code)) return { key: k, ...HB.siteGroups[k] }; return null; }
+  function habStyle(f) {
+    const p = f.properties; const age = p.keskm_vanus || 0; const g = siteGroup(p.kasvukoht_kood);
+    const pine = p.peapuuliik_kood === 'MA';
+    const show = age >= HAB.minAge;
+    const palu = g && (g.key === 'palu' || g.key === 'nomm');
+    return { className: 'hab', color: palu ? '#7A4A1E' : (pine ? '#8A6508' : '#1E4727'), weight: palu ? 1.8 : 0.8, opacity: show ? .9 : 0, fillColor: pine ? '#C9920F' : '#2F6B3A', fillOpacity: show ? (age >= 80 ? .5 : age >= 60 ? .38 : .25) : 0, interactive: show };
+  }
+  function habPopup(f, latlng) {
+    const t = T().habitat; const p = f.properties; const g = siteGroup(p.kasvukoht_kood);
+    const sp = tr(HB.species[p.peapuuliik_kood]) || p.peapuuliik_kood; const own = tr(HB.ownership[p.omandivorm_kood]) || '';
+    const verdict = g ? (g.rank >= 3 ? ['good', t.good] : g.rank >= 1 ? ['ok', t.ok] : ['poor', t.poor]) : ['ok', t.ok];
+    const site = `${HB.siteNames[p.kasvukoht_kood] || p.kasvukoht_kood}${g ? ` (${tr(g)})` : ''}`;
+    const w = el('div', {}, [
+      el('h4', {}, [`${sp.charAt(0).toUpperCase() + sp.slice(1)}, ${p.keskm_vanus} ${t.years}`]),
+      el('span', { class: 'verdict ' + verdict[0] }, [verdict[1]]),
+      el('div', {}, [`${t.site}: ${site}`]),
+      el('div', {}, [`${t.height} ${p.korgus != null ? p.korgus + ' m' : '–'}, ${t.area} ${p.pindala != null ? p.pindala.toFixed(1) + ' ha' : '–'}${own ? ', ' + own : ''}`]),
+      el('button', { class: 'chip', style: 'margin-top:8px', onclick: () => { map.closePopup(); openCompass({ lat: latlng.lat, lon: latlng.lng, label: `${sp} ${p.keskm_vanus} ${t.years}` }); } }, [t.compassHere]),
+      el('div', { class: 'src' }, [t.source])
+    ]);
+    return w;
+  }
+  async function habRefresh() {
+    const legend = $('#habLegend');
+    if (!HAB.on) { if (HAB.group) { HAB.group.clearLayers(); } HAB.layers.clear(); if (legend) legend.classList.remove('on'); return; }
+    if (legend) legend.classList.add('on');
+    if (!HAB.group) HAB.group = L.layerGroup().addTo(map);
+    if (map.getZoom() < HAB.minZoom) { HAB.group.clearLayers(); HAB.layers.clear(); if (!HAB.hintShown) { toast(T().habitat.zoomHint); HAB.hintShown = true; } $('#habLegend .hint').textContent = T().habitat.zoomHint; return; }
+    $('#habLegend .hint').textContent = '';
+    const keys = habCellsFor(map.getBounds().pad(0.15));
+    // drop cells far from view
+    for (const [k, lyr] of HAB.layers) if (!keys.includes(k)) { HAB.group.removeLayer(lyr); HAB.layers.delete(k); }
+    for (const k of keys) {
+      if (HAB.layers.has(k)) { HAB.layers.get(k).setStyle(habStyle); continue; }
+      let data = HAB.cells.get(k);
+      if (!data) {
+        const [x, y] = k.split('/').map(Number);
+        try { HAB.inflight++; const r = await fetch(habCellUrl(x, y)); if (!r.ok) throw new Error(r.status); data = await r.json(); HAB.cells.set(k, data); }
+        catch (e) { data = null; if (!navigator.onLine) toast(T().habitat.offlineNone); }
+        finally { HAB.inflight--; }
+        if (!HAB.on || map.getZoom() < HAB.minZoom) return;
+      }
+      if (!data || HAB.layers.has(k)) continue;
+      const lyr = L.geoJSON(data, { style: habStyle, onEachFeature: (f, layer) => { layer.on('click', (e) => { L.popup({ className: 'hab-popup', maxWidth: 280 }).setLatLng(e.latlng).setContent(habPopup(f, e.latlng)).openOn(map); L.DomEvent.stop(e); }); } });
+      HAB.layers.set(k, lyr); HAB.group.addLayer(lyr);
+      if (HAB.group.getLayers().length && S.selected) { markers[S.selected] && markers[S.selected].setZIndexOffset(600); }
+    }
+  }
+  function setHab(on) { HAB.on = on; localStorage.setItem('ks.hab', on ? '1' : '0'); habRefresh(); }
+  function setHabAge(a) { HAB.minAge = a; localStorage.setItem('ks.habAge', String(a)); habRefresh(); }
+  async function habPrefetch(center, radiusKm) {
+    const dLat = radiusKm / 111, dLon = radiusKm / (111 * Math.cos(rad(center.lat)));
+    const keys = habCellsFor(L.latLngBounds([center.lat - dLat, center.lon - dLon], [center.lat + dLat, center.lon + dLon]));
+    let ok = 0; for (const k of keys) { const [x, y] = k.split('/').map(Number); try { const r = await fetch(habCellUrl(x, y)); if (r.ok) { ok++; if (!HAB.cells.has(k)) HAB.cells.set(k, await r.json()); } } catch (e) { /* skip */ } }
+    return ok;
+  }
+  let habTimer;
+  function habInit() {
+    map.on('moveend zoomend', () => { clearTimeout(habTimer); habTimer = setTimeout(habRefresh, 200); });
+    const t = T().habitat;
+    const lg = el('div', { class: 'hab-legend', id: 'habLegend' }, [el('b', {}, [t.legend]), el('div', { class: 'row' }, [el('i', { class: 'ma' }), t.pine]), el('div', { class: 'row' }, [el('i', { class: 'ku' }), t.spruce]), el('div', { class: 'row' }, [el('i', { class: 'palu' }), t.palu]), el('div', { class: 'hint' })]);
+    $('#app').append(lg);
+    map.attributionControl.addAttribution('<a href="https://keskkonnaportaal.ee/et/avaandmed/metsaregistri-andmestikud" target="_blank" rel="noopener">Metsaregister</a> CC BY 4.0');
+    if (HAB.on) setTimeout(habRefresh, 300);
+  }
 
   // ---------- tile download ----------
   function lon2tile(lon, z) { return Math.floor((lon + 180) / 360 * 2 ** z); }
@@ -292,7 +384,9 @@
     const cache = await caches.open('ks-tiles');
     const worker = async () => { while (urls.length) { const u = urls.shift(); try { const hit = await cache.match(u); if (!hit) { const r = await fetch(u, { mode: 'no-cors' }); await cache.put(u, r); } ok++; } catch (e) { /* skip */ } done++; if (done % 10 === 0) label.textContent = `${t.downloading} ${done}`; } };
     await Promise.all([worker(), worker(), worker(), worker()]);
-    label.textContent = t.offlineReady; toast(t.downloaded(ok)); btn.disabled = false;
+    label.textContent = t.downloading + ' (metsaregister)';
+    const cells = await habPrefetch(s, radiusKm);
+    label.textContent = t.offlineReady; toast(`${t.downloaded(ok)}, ${T().habitat.cells(cells)}`); btn.disabled = false;
   }
 
   // ---------- compass view ----------
@@ -324,7 +418,7 @@
     S.tab = tab; document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab || (tab === 'about' && false)));
     document.querySelectorAll('.pane').forEach((p) => p.classList.remove('on'));
     const sheet = $('#sheet'); const mapView = tab === 'map' || tab === 'spots';
-    sheet.style.display = mapView ? '' : 'none'; $('.mapbtns').style.display = mapView ? '' : 'none'; $('.topbar').style.display = mapView ? '' : 'none';
+    sheet.style.display = mapView ? '' : 'none'; $('.mapbtns').style.display = mapView ? '' : 'none'; $('.topbar').style.display = mapView ? '' : 'none'; const lg = $('#habLegend'); if (lg) lg.style.display = (mapView && HAB.on) ? 'block' : 'none';
     if (tab === 'spots') { if (S.selected) deselect(); setSheet('full'); }
     if (tab === 'map' && S.sheet === 'full') setSheet('half');
     if (tab === 'finds') { $('#paneFinds').classList.add('on'); renderFinds(); }
@@ -510,6 +604,7 @@
       el('li', {}, [el('a', { href: 'https://www.gbif.org/', target: '_blank', rel: 'noopener' }, ['GBIF']), ', sh PlutoF ja TÜ loodusmuuseum']),
       el('li', {}, [el('a', { href: 'https://rmk.ee/', target: '_blank', rel: 'noopener' }, ['RMK']), ' valla riigimetsa kavad; ', el('a', { href: 'https://elron.ee/seeneekspress', target: '_blank', rel: 'noopener' }, ['Elron Seeneekspress'])]),
       el('li', {}, ['Kaart: ', el('a', { href: 'https://www.openstreetmap.org/copyright', target: '_blank', rel: 'noopener' }, ['OpenStreetMap']), ', ', el('a', { href: 'https://geoportaal.maaamet.ee/', target: '_blank', rel: 'noopener' }, ['Maa-amet']), '. Ilm: ', el('a', { href: 'https://open-meteo.com/', target: '_blank', rel: 'noopener' }, ['Open-Meteo'])]),
+      el('li', {}, [el('a', { href: 'https://keskkonnaportaal.ee/et/avaandmed/metsaregistri-andmestikud', target: '_blank', rel: 'noopener' }, ['Metsaregister']), ', Keskkonnaagentuur, CC BY 4.0 (puistud: peapuuliik, vanus, kasvukohatüüp)']),
       el('li', {}, ['Leaflet 1.9.4 (BSD-2), Alegreya Sans (OFL)'])
     ]));
     c3.append(el('h3', {}, [t.about.disclaimer])); c3.append(el('p', { class: 'small' }, [t.about.disclaimerText]));
@@ -524,7 +619,7 @@
 
   // ---------- boot ----------
   function renderAll() { renderSpotMarkers(); renderSheet(); if (S.tab === 'finds') renderFinds(); if (S.tab === 'learn') renderLearn(); if (S.tab === 'season') renderSeason(); if (S.tab === 'about') renderAbout(); }
-  applyTheme(); initMap(); applyLang(); setSheet('peek'); loadFinds();
+  applyTheme(); initMap(); habInit(); applyLang(); setSheet('peek'); loadFinds();
   // Expose a little for debugging
-  window.KS = { S, map, selectSpot, setTab, openCompass };
+  window.KS = { S, map, selectSpot, setTab, openCompass, setHab, HAB };
 })();
