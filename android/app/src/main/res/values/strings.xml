@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kukeseen</string>
+    <string name="title_activity_main">Kukeseen</string>
+    <string name="package_name">ee.kukeseen.app</string>
+    <string name="custom_url_scheme">ee.kukeseen.app</string>
+</resources>

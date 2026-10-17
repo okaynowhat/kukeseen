@@ -1,0 +1,22 @@
+{
+  "name": "kukeseen-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kukeseen: chanterelle spot finder PWA and Android app for the Tartu region",
+  "scripts": {
+    "serve": "python3 -m http.server 8793 --directory app",
+    "shots": "node scripts/screenshots.mjs",
+    "cap:sync": "npx cap sync android",
+    "apk:debug": "cd android && ./gradlew assembleDebug",
+    "apk:release": "cd android && ./gradlew assembleRelease"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "playwright": "^1.57.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.6.9",
+    "@capacitor/cli": "^7.6.9",
+    "@capacitor/core": "^7.6.9"
+  }
+}

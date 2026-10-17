@@ -1,0 +1,13 @@
+# Open questions
+
+Placeholders in any file point here. Never delete an item; mark it `RESOLVED: <decision, date>`.
+
+- **OQ-1 Name and bundle id.** Working title "Kukeseen", Android id `ee.kukeseen.app` in `capacitor.config.json`. Why: the id cannot change after a store release, and the name decides the domain. Decides: Henri. Placeholder: as above.
+- **OQ-2 Hosting.** The PWA needs an HTTPS origin for installation (iPhone "Add to Home Screen", Android install prompt). `docs/DEPLOY.md` is written for GitHub Pages under okaynowhat; a custom domain is open. Decides: Henri. Placeholder: GitHub Pages.
+- **OQ-3 Tile provider for public use.** OSM public tiles are fine for personal use but their usage policy excludes heavy app traffic; Maa-amet tiles have no stated quota found. Options: Maa-amet as default, a paid provider (MapTiler, Stadia), or self-hosted. Decides: Henri before any public launch. Placeholder: OSM default, Maa-amet layers offered.
+- **OQ-4 Signing identity and store release.** A release keystore has not been generated. Google Play needs a developer account and a privacy policy page; App Store needs the PWA route or a Capacitor iOS build on a Mac. Decides: Henri. Placeholder: debug APK only.
+- **OQ-5 Identification help.** Should the app ever add photo-based ID (on-device model)? Competitors do; ERR and Norway's FHI warn against AI edibility verdicts. Current rule: teach, never verdict. Decides: Henri. Placeholder: text and lookalike lessons only.
+- **OQ-6 Pricing.** Free personal tool today. Competitor scan suggests free core plus one-time payment if ever published. Decides: Henri. Placeholder: free.
+- **OQ-7 Sharing finds.** Private log only. A future opt-in "share to iNaturalist" or a trusted-circle sync (nostr relays as in Carve) would change the privacy model. Decides: Henri. Placeholder: export/import JSON and GPX.
+- **OQ-8 Spot coverage.** 21 hand-curated spots. A scripted importer from GBIF/iNaturalist (country-wide, auto-tiered) is designed but not built; it would need rules for accuracy thresholds and for excluding soil DNA records from tier A. Decides: Henri on scope (Tartu only or all Estonia). Placeholder: hand-curated list.
+- **OQ-9 Season index weights.** The index in `renderSeason` (rain 14 d, lag window 7 to 16 d, mean temperature bands, frost penalty) is a heuristic with invented weights. Decides: Henri, ideally after one season of comparing it with real finds. Placeholder: current weights, labelled as heuristic in UI.
