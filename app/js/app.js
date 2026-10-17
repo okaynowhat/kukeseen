@@ -3,6 +3,8 @@
   'use strict';
   const D = window.KS_DATA, I18N = window.KS_I18N, LESSONS = window.KS_LESSONS, QUIZ = window.KS_QUIZ;
   const VERSION = '0.2.0';
+  const RELEASES_URL = 'https://github.com/okaynowhat/kukeseen/releases';
+  const APK_URL = RELEASES_URL + '/latest/download/kukeseen.apk';
   const $ = (s, r) => (r || document).querySelector(s);
   const el = (tag, attrs, children) => {
     const n = document.createElement(tag);
@@ -597,6 +599,15 @@
     else c2.append(el('p', { class: 'muted' }, [isIos ? t.about.installIos : t.about.installIos]));
     c2.append(el('button', { class: 'btn', onclick: async () => { if ('caches' in window) { await caches.delete('ks-tiles'); toast(t.about.tilesCleared); } } }, [t.about.clearTiles]));
     p.append(c2);
+    if (!window.Capacitor) {
+      const isAndroid = /android/i.test(navigator.userAgent);
+      const c2b = el('div', { class: 'card' });
+      c2b.append(el('h3', {}, [t.about.apk]));
+      c2b.append(el('a', { class: 'btn' + (isAndroid ? ' primary' : ''), href: APK_URL, rel: 'noopener' }, [svgIcon('download'), `${t.about.apkDownload} (${t.about.apkSize})`]));
+      c2b.append(el('p', { class: 'small muted', style: 'margin-top:8px' }, [t.about.apkHint + (isAndroid ? ' ' + t.about.apkOrPwa : '')]));
+      c2b.append(el('p', { class: 'small muted' }, [el('a', { href: RELEASES_URL, target: '_blank', rel: 'noopener' }, ['GitHub Releases']), ` · ${t.about.version} ${VERSION}`.replace(' · ', ', ')]));
+      p.append(c2b);
+    }
     const c3 = el('div', { class: 'card' });
     c3.append(el('h3', {}, [t.about.sources]));
     c3.append(el('ul', { class: 'small' }, [

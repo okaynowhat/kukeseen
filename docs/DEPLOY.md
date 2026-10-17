@@ -21,7 +21,7 @@ npm install
 npx cap sync android
 cd android && ./gradlew assembleDebug
 ```
-The debug APK lands in `android/app/build/outputs/apk/debug/app-debug.apk`. Install with `adb install -r <apk>`. For a release build create a keystore and a `android/keystore.properties` (not committed), then add a `signingConfigs.release` block to `android/app/build.gradle` and run `assembleRelease`. See OQ-4.
+The debug APK lands in `android/app/build/outputs/apk/debug/app-debug.apk`. Install with `adb install -r <apk>`. Release build and publishing: `scripts/release-apk.sh` builds a signed release APK (keystore at `~/keystores/kukeseen-release.keystore`, properties symlinked to `android/keystore.properties`, both outside git) and uploads it to the GitHub Release `v<version>` as `kukeseen-v<version>.apk` plus a stable `kukeseen.apk`. The web page links to `https://github.com/okaynowhat/kukeseen/releases/latest/download/kukeseen.apk`. Bump `version` in `package.json`, `VERSION` in `app/js/app.js` and `app/sw.js`, and `versionCode`/`versionName` in `android/app/build.gradle` together. Back up the keystore: without it no update can be installed over the published APK (see OQ-4).
 
 ## Local development
 ```
