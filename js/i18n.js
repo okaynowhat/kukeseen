@@ -60,7 +60,7 @@ window.KS_I18N = {
       C: 'RMK, Elron or the press names the area as a chanterelle forest.',
       D: 'Suitable state forest, no recorded find.'
     },
-    filters: 'Filters', all: 'All', within: 'Within', km: 'km', fromYou: 'of you', fromHome: 'of home',
+    filters: 'Filters', all: 'All', within: 'Within', km: 'km', fromYou: 'from you', fromHome: 'from home',
     sortByDistance: 'By distance', nSpots: (n) => `${n} spots`,
     evidence: 'Evidence', habitat: 'Forest and terrain', route: 'Route from Haaslava', parking: 'Parking and access',
     accuracy: 'Accuracy', drive: 'Drive there', walk: 'Compass to spot', download: 'Download map', downloading: 'Caching tiles',
