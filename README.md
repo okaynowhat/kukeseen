@@ -7,10 +7,10 @@ Kukeseen is a phone app that shows where chanterelles have actually been documen
 - **What exists.** A buildless PWA in `app/` and a Capacitor Android project in `android/`. 21 curated chanterelle spots with evidence tiers (A observation, B soil DNA, C named forest, D habitat guess), each with dated sources, route text from Haaslava, parking where known. Map layers: OpenStreetMap plus three Maa-amet layers. Compass walk-in screen, drive hand-off, per-spot offline tiles, private find log with photos and GPX export, eight lessons and a quiz in Estonian and English, a season index from Open-Meteo.
 - **What it enables.** Going out this weekend with the two nearest proven spots (Uniküla/Vooremäe, Kaagvere) on the phone, offline, with a compass. Sharing an installable link once hosted.
 - **What it does not claim.** A spot is evidence that the mycorrhiza has been there, not that mushrooms are there today. No edibility verdicts. All find data stays on the device.
-- **Open.** OQ-1 name and bundle id, OQ-2 hosting, OQ-3 public tile provider, OQ-4 signing and stores, OQ-5 photo ID policy. See OPEN-QUESTIONS.md and ROADMAP.md.
+- **Open.** OQ-1 name and bundle id, OQ-3 public tile provider, OQ-4 signing and stores, OQ-5 photo ID policy. See OPEN-QUESTIONS.md and ROADMAP.md.
 
 ## Status
-- 2026-10-17: v0.1.0. Smoke test passes in light and dark mode with no console errors (`npm run shots`). Debug APK built and verified on the Android 14 emulator (GPS fix, spot detail, compass); copy at `~/Downloads/kukeseen/kukeseen-v0.1.0-debug.apk`. Web preview (no GPS in the sandbox): https://claude.ai/artifact/1sANDJbkwrWSTBkyCKm9Pz
+- 2026-10-17: v0.1.0. Smoke test passes in light and dark mode with no console errors (`npm run shots`). Debug APK built and verified on the Android 14 emulator (GPS fix, spot detail, compass); copy at `~/Downloads/kukeseen/kukeseen-v0.1.0-debug.apk`. Live PWA: https://okaynowhat.github.io/kukeseen/ (install from Safari or Chrome). Repo: https://github.com/okaynowhat/kukeseen. Sandbox preview without GPS: https://claude.ai/artifact/1sANDJbkwrWSTBkyCKm9Pz
 
 ## File map
 - `app/index.html`, `app/css/app.css`, `app/js/app.js`: the application (vanilla JS, Leaflet 1.9.4 vendored).
