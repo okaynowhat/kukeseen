@@ -1,6 +1,6 @@
 {
   "name": "kukeseen-app",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Kukeseen: chanterelle spot finder PWA and Android app for the Tartu region",
   "scripts": {
