@@ -28,6 +28,9 @@ async function run(scheme) {
   await page.click('.tab[data-tab="season"]'); await page.waitForTimeout(4000); await shot('12-season');
   await page.click('.tab[data-tab="map"]'); await page.waitForTimeout(300); await page.click('#btnAbout'); await page.waitForTimeout(300); await shot('13-about');
   await page.click('.tab[data-tab="map"]'); await page.click('#btnLayers'); await page.waitForTimeout(200); await page.click('text=Maa-amet kaart'); await page.waitForTimeout(2500); await shot('14-maaamet');
+  await page.evaluate(() => { window.KS.map.setView([58.2818, 26.8895], 14); }); await page.click('#btnLayers'); await page.waitForTimeout(200); await page.click('#layerMenu >> text=Metsaregister'); await page.waitForTimeout(5000); await shot('15-habitat');
+  const habCount = await page.evaluate(() => window.KS.HAB.group ? window.KS.HAB.group.getLayers().length : 0); console.log(`[${scheme}] habitat cells rendered: ${habCount}`);
+  await page.evaluate(() => window.KS.setHab(false)); await page.waitForTimeout(300);
   const sw = await page.evaluate(async () => { const r = await navigator.serviceWorker.getRegistration(); return r ? (r.active ? 'active' : 'installing') : 'none'; });
   console.log(`[${scheme}] service worker: ${sw}`);
   await ctx.close();

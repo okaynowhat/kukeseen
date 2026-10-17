@@ -1,8 +1,8 @@
 // Kukeseen service worker: app shell precache + runtime tile cache.
-const VERSION = 'ks-v0.1.0';
+const VERSION = 'ks-v0.2.0';
 const SHELL = `${VERSION}-shell`;
 const TILES = 'ks-tiles';
-const TILE_HOSTS = ['tile.openstreetmap.org', 'tiles.maaamet.ee'];
+const TILE_HOSTS = ['tile.openstreetmap.org', 'tiles.maaamet.ee', 'gsavalik.envir.ee'];
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './css/app.css', './js/app.js', './js/data.js', './js/i18n.js', './js/lessons.js',

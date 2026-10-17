@@ -43,6 +43,10 @@ window.KS_I18N = {
       install: 'Paigalda telefoni', installIos: 'iPhone: vajuta Safaris jagamisnuppu ja vali "Lisa avakuvale".', installed: 'Rakendus on paigaldatud',
       sources: 'Andmeallikad', disclaimer: 'Vastutus', disclaimerText: 'Rakendus näitab avalikke vaatlusi ja elupaigapakkumisi. Seene määramise ja söömise eest vastutad sina. Kahtluse korral jäta seen korjamata.',
       version: 'Versioon' },
+    habitat: { layer: 'Metsaregister: männikud ja kuusikud', legend: 'Puistud 40+ a', pine: 'Männik', spruce: 'Kuusik', palu: 'palumets või nõmm', minAge: 'Vanus vähemalt', years: 'a',
+      zoomHint: 'Suumi lähemale, puistud ilmuvad alates tasemest 13.', loading: 'Laadin puistuid', offlineNone: 'Puistud pole võrguta saadaval: laadi koht enne alla.',
+      stand: 'Puistu', age: 'vanus', height: 'kõrgus', area: 'pindala', site: 'kasvukohatüüp', compassHere: 'Kompass siia', good: 'Kukeseenele sobiv kasvukoht', ok: 'Võimalik, kui valgust ja sammalt', poor: 'Kukeseenele harva sobiv',
+      source: 'Metsaregister, Keskkonnaagentuur, CC BY 4.0', cells: (n) => `puistud ${n} ruudus` },
     tabsHint: 'Puuduta kohta kaardil või nimekirjas.',
     detailBack: 'Tagasi', close: 'Sulge', offline: 'Oled võrguta', online: 'Võrk tagasi',
     unitsM: 'm', nearest: 'Lähim koht', you: 'Sina', homeName: 'Kodu'
@@ -90,6 +94,10 @@ window.KS_I18N = {
       install: 'Install on phone', installIos: 'iPhone: tap the Share button in Safari and choose "Add to Home Screen".', installed: 'App is installed',
       sources: 'Data sources', disclaimer: 'Responsibility', disclaimerText: 'The app shows public observations and habitat suggestions. Identifying and eating a mushroom is your responsibility. When in doubt, leave it.',
       version: 'Version' },
+    habitat: { layer: 'Forest register: pine and spruce stands', legend: 'Stands 40+ yr', pine: 'Pine', spruce: 'Spruce', palu: 'heath pine or dry heath type', minAge: 'Minimum age', years: 'yr',
+      zoomHint: 'Zoom in, stands appear from zoom level 13.', loading: 'Loading stands', offlineNone: 'Stands are not available offline: download the spot first.',
+      stand: 'Stand', age: 'age', height: 'height', area: 'area', site: 'site type', compassHere: 'Compass here', good: 'Good chanterelle site type', ok: 'Possible where light and moss reach', poor: 'Rarely a chanterelle site',
+      source: 'Forest register, Estonian Environment Agency, CC BY 4.0', cells: (n) => `stands in ${n} cells` },
     tabsHint: 'Tap a spot on the map or in the list.',
     detailBack: 'Back', close: 'Close', offline: 'You are offline', online: 'Back online',
     unitsM: 'm', nearest: 'Nearest spot', you: 'You', homeName: 'Home'

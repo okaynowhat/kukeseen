@@ -188,3 +188,23 @@ select.chip { appearance: none; padding-right: 26px; background-image: linear-gr
   .pane { padding-left: max(16px, calc(50% - 440px)); padding-right: max(16px, calc(50% - 440px)); }
   .tabs { grid-template-columns: repeat(5, 120px); justify-content: center; }
 }
+
+/* habitat layer (forest register) */
+.hab-legend { position: absolute; left: 10px; bottom: calc(var(--tab-h) + var(--safe-b) + 190px); z-index: 5; background: color-mix(in srgb, var(--panel) 92%, transparent); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 8px 10px; font-size: 13px; display: none; box-shadow: var(--shadow); max-width: 200px; transition: bottom .25s ease; }
+.hab-legend.on { display: block; }
+.hab-legend b { display: block; margin-bottom: 4px; font-weight: 500; }
+.hab-legend .row { gap: 6px; margin: 2px 0; flex-wrap: nowrap; }
+.hab-legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; flex: none; }
+.hab-legend i.ma { background: rgba(201,146,15,.45); border: 1px solid #8A6508; } .hab-legend i.ku { background: rgba(47,107,58,.4); border: 1px solid #1E4727; } .hab-legend i.palu { border: 2px solid var(--peat); background: transparent; }
+.hab-legend .hint { color: var(--ink-2); margin-top: 4px; }
+.hab-popup .leaflet-popup-content-wrapper { background: var(--panel); color: var(--ink); border-radius: var(--radius-s); box-shadow: var(--shadow); font: inherit; }
+.hab-popup .leaflet-popup-tip { background: var(--panel); }
+.hab-popup .leaflet-popup-content { margin: 12px 14px; font-size: 15px; line-height: 1.35; }
+.hab-popup h4 { margin: 0 0 4px; font-size: 17px; }
+.hab-popup .verdict { display: inline-block; border-radius: 6px; padding: 1px 8px; font-size: 13px; margin: 4px 0 6px; }
+.hab-popup .verdict.good { background: var(--gold); color: var(--gold-ink); } .hab-popup .verdict.ok { background: var(--moss); color: #fff; } .hab-popup .verdict.poor { background: var(--stone); color: #fff; }
+.hab-popup .src { color: var(--ink-2); font-size: 12px; margin-top: 6px; }
+.menu .sep { border-top: 1px solid var(--line); margin: 6px 0; }
+.menu .chips { padding: 4px 8px 6px; }
+.menu .chip { font-size: 14px; padding: 3px 10px; }
+.leaflet-interactive.hab { cursor: pointer; }

@@ -4,18 +4,18 @@ Written 2026-10-17 after the first build (v0.1.0) and the competition scan in `n
 
 ## Executive Overview
 
-- v0.1.0 does the three things no Estonian app does together: a public, evidence-tiered chanterelle map, a walk-to-spot compass, and the legal and lookalike content, in Estonian and English, as a PWA and an Android APK.
+- v0.2.0 (same day) adds the forest-register habitat layer, which fuses evidence, habitat and compass in one map; the competition scan found that triple nowhere. v0.1.0 did the three things no Estonian app does together: a public, evidence-tiered chanterelle map, a walk-to-spot compass, and the legal and lookalike content, in Estonian and English, as a PWA and an Android APK.
 - The competition moved this month: Seeneleidja (forest-register habitat map, offline) and Seenetuvastaja (AI ID with private find map) both shipped updates on 16 Oct 2026, and 4est (Latvia) launched on 5 Oct. None shows public evidence or a compass. The window to own "evidence, not guesses" is open but short.
 - The weakest part of the product is data density: the whole country has 77 iNaturalist and about 295 human-observation GBIF chanterelle records. The roadmap therefore invests first in habitat (forest register) and the private log, and only then in community features.
 - Decisions that gate the roadmap: hosting and name (OQ-1, OQ-2), tile provider (OQ-3), whether photo ID is ever added (OQ-5), and whether finds may leave the phone (OQ-7).
 
-## Now (v0.1, shipped 2026-10-17)
+## Now (v0.2, shipped 2026-10-17)
 
-Map with four base layers (OSM, Maa-amet kaart, ortofoto, hübriid), 21 curated spots with tiers and dated sources, distance-sorted list with filters, spot detail with route text from Haaslava, drive hand-off (Google, Apple, Waze, geo:), compass walk-in screen with GPS bearing and device heading, per-spot offline tile download, private find log (GPS, photo, notes, IndexedDB, JSON and GPX export/import), eight lessons and a quiz, season index from Open-Meteo, ET/EN, light/dark, PWA install, Android APK.
+Forest-register habitat layer (live WFS stands, pine and spruce 40+, site-type verdicts, tap for details, cached per cell and prefetched with a spot). Map with four base layers (OSM, Maa-amet kaart, ortofoto, hübriid), 21 curated spots with tiers and dated sources, distance-sorted list with filters, spot detail with route text from Haaslava, drive hand-off (Google, Apple, Waze, geo:), compass walk-in screen with GPS bearing and device heading, per-spot offline tile download, private find log (GPS, photo, notes, IndexedDB, JSON and GPX export/import), eight lessons and a quiz, season index from Open-Meteo, ET/EN, light/dark, PWA install, Android APK.
 
 ## Next (v0.2, by end of November 2026): make it trustworthy in the field
 
-1. **Forest-register habitat layer.** The state forest register is open data; Seeneleidja proved people pay for stands filtered by species and age. Show pine and spruce stands aged 40 plus as a toggle layer, so a tier D spot becomes "here is the exact stand". Depends on OQ-3 (tile budget) and a one-off conversion script (WFS to vector tiles or GeoJSON per region).
+1. **Habitat layer, done in v0.2** (ADR 0002). Follow-ups: a fully offline bundled extract for Tartumaa, stand composition from `eraldis_element` (share of pine in mixed stands), and a "best stands near me" list derived from the layer.
 2. **Scripted spot importer.** Pull GBIF and iNaturalist records for all of Estonia, auto-tier them (human observation with photo = A, material sample = B), respect obscured records and licences, and merge with the curated list. Resolves OQ-8. Depends on accuracy and deduplication rules.
 3. **Field reliability.** Keep the screen awake in compass mode (Wake Lock API), add a "mark the car" quick action, haptic tick when within 30 m, and a breadcrumb trail of the walk so the user can return the same way. All browser APIs, no backend.
 4. **Offline polish.** Download tiles for a whole region (one tap for "Kastre vald"), show cache size, and precache Maa-amet kaart rather than OSM because it carries the forest-type colouring.
