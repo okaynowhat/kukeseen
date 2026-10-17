@@ -10,7 +10,7 @@ Kukeseen is a phone app that shows where chanterelles have actually been documen
 - **Open.** OQ-1 name and bundle id, OQ-2 hosting, OQ-3 public tile provider, OQ-4 signing and stores, OQ-5 photo ID policy. See OPEN-QUESTIONS.md and ROADMAP.md.
 
 ## Status
-- 2026-10-17: v0.1.0. Smoke test passes in light and dark mode with no console errors (`npm run shots`). Debug APK build: see the build log note at the end of this file once it completes.
+- 2026-10-17: v0.1.0. Smoke test passes in light and dark mode with no console errors (`npm run shots`). Debug APK built and verified on the Android 14 emulator (GPS fix, spot detail, compass); copy at `~/Downloads/kukeseen/kukeseen-v0.1.0-debug.apk`. Web preview (no GPS in the sandbox): https://claude.ai/artifact/1sANDJbkwrWSTBkyCKm9Pz
 
 ## File map
 - `app/index.html`, `app/css/app.css`, `app/js/app.js`: the application (vanilla JS, Leaflet 1.9.4 vendored).
