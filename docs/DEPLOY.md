@@ -1,9 +1,13 @@
 # Deploy and install
 
 ## Hosting the PWA (GitHub Pages)
-1. Create a repository (for example `okaynowhat/kukeseen`) and push this folder.
-2. In repository settings, Pages, choose "GitHub Actions". The workflow in `.github/workflows/pages.yml` publishes `app/` on every push to `main`.
-3. The app is then at `https://<user>.github.io/kukeseen/`. All paths in `index.html`, `sw.js` and the manifest are relative, so a sub-path works.
+Live at https://okaynowhat.github.io/kukeseen/ from the `gh-pages` branch, which holds only the contents of `app/`.
+
+1. Commit changes on `main`.
+2. Run `scripts/deploy-pages.sh`: it splits `app/` into the `gh-pages` branch with `git subtree split` and force-pushes it. Pages rebuilds within a minute.
+3. All paths in `index.html`, `sw.js` and the manifest are relative, so the `/kukeseen/` sub-path works. Bump `VERSION` in `sw.js` so installed copies pick up the new shell.
+
+Alternative: `docs/pages-workflow.yml` is a GitHub Actions workflow that publishes `app/` on every push to `main`. Moving it to `.github/workflows/` needs a token with the `workflow` scope (`gh auth refresh -s workflow`) and Pages set to "GitHub Actions".
 
 ## Install on iPhone
 Open the URL in Safari, tap Share, choose "Add to Home Screen". The app runs full screen, keeps finds in IndexedDB and caches map tiles. For the compass, tap "Luba kompass" once in the compass view; iOS asks for motion and orientation access.
